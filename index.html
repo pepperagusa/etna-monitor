@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Etna e voli Catania</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: colonna unica da quadro operativo; stato in alto, quattro livelli distinti, poi storico cambiamenti */
+:root{
+  --bg:#f3f4f2; --panel:#ffffff; --fg:#1d2124; --muted:#5d666b; --line:#d9ddda; --accent:#9a4a1f;
+  --green:#2f7d4a; --yellow:#a07a00; --orange:#c25e00; --red:#b3261e;
+  --display:"Barlow Condensed","Arial Narrow",sans-serif; --body:"Barlow",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#15181a; --panel:#1e2225; --fg:#e8eaea; --muted:#9aa3a7; --line:#30363a; --accent:#e08a55;
+  --green:#5cbf7d; --yellow:#e0b93a; --orange:#f08a3c; --red:#ef6b60; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15181a; --panel:#1e2225; --fg:#e8eaea; --muted:#9aa3a7; --line:#30363a; --accent:#e08a55;
+  --green:#5cbf7d; --yellow:#e0b93a; --orange:#f08a3c; --red:#ef6b60; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 var(--body)}
+.wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:20px 40px;display:grid;gap:18px}
+h1{font:700 1.9rem/1.1 var(--display);letter-spacing:.01em;margin:0;text-wrap:balance}
+.sub{color:var(--muted);font-size:.9rem;margin-top:4px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.label{font:600 .72rem var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.code{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);font:700 .95rem var(--display);letter-spacing:.06em;background:var(--panel)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--muted)}
+.c-GREEN .dot{background:var(--green)} .c-YELLOW .dot{background:var(--yellow)} .c-ORANGE .dot{background:var(--orange)} .c-RED .dot{background:var(--red)}
+.trend{font-weight:600}
+.layers{display:grid;gap:0;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden}
+.layer{display:grid;grid-template-columns:2.2rem 1fr;gap:12px;padding:14px 16px;border-top:1px solid var(--line)}
+.layer:first-child{border-top:0}
+.n{font:700 1.4rem/1 var(--display);color:var(--accent)}
+.layer h2{font:600 1.05rem var(--display);letter-spacing:.03em;margin:0 0 4px;text-transform:uppercase}
+.layer p{margin:0;min-width:0;overflow-wrap:anywhere}
+.layer .meta{color:var(--muted);font-size:.85rem;margin-top:4px}
+section>h3{font:700 1.2rem var(--display);margin:0 0 8px;letter-spacing:.02em}
+.events{display:grid;gap:10px}
+.ev{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:4px}
+.ev .t{font-weight:600}
+.ev .d{color:var(--muted);font-size:.85rem}
+.empty{color:var(--muted);font-size:.9rem;padding:12px 0}
+form{display:flex;flex-wrap:wrap;gap:8px;align-items:end}
+form label{display:grid;gap:4px;font-size:.85rem;color:var(--muted)}
+input{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);min-width:0;width:11rem}
+button{font:600 .9rem var(--body);padding:9px 14px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
+button.ghost{background:transparent;color:var(--accent)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#msg{font-size:.85rem;color:var(--muted)}
+</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Etna e voli Catania</h1>
+      <div class="sub">Ultimo controllo: <span id="lastCheck" class="mono">in attesa del primo controllo</span></div>
+    </div>
+    <div class="code" id="code"><span class="dot"></span><span id="codeTxt">CODICE —</span></div>
+  </header>
+  <div class="label">Tendenza: <span id="trend" class="trend">—</span></div>
+
+  <div class="layers">
+    <div class="layer"><div class="n">1</div><div><h2>Attività dell'Etna</h2><p id="etna">Lo stato comparirà dopo il primo controllo.</p><div class="meta" id="etnaMeta"></div></div></div>
+    <div class="layer"><div class="n">2</div><div><h2>Cenere nello spazio aereo</h2><p id="ash">—</p><div class="meta" id="ashMeta"></div></div></div>
+    <div class="layer"><div class="n">3</div><div><h2>Aeroporto di Catania</h2><p id="apt">—</p><div class="meta" id="aptMeta"></div></div></div>
+    <div class="layer"><div class="n">4</div><div><h2>Il tuo volo</h2><p id="flt">Nessun volo seguito.</p><div class="meta" id="fltMeta"></div></div></div>
+  </div>
+
+  <section>
+    <h3>Cambiamenti segnalati</h3>
+    <div class="events" id="events"><div class="empty">Qui compariranno solo i cambiamenti significativi rilevati dai controlli orari.</div></div>
+  </section>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const fmt=s=>{if(!s)return"";try{return new Date(s).toLocaleString("it-IT",{timeZone:"Europe/Rome",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})+" (ora italiana)"}catch(e){return s}};
+function renderState(s){
+  if(!s)return;
+  $("lastCheck").textContent=fmt(s.last_check)||"—";
+  const c=(s.aviation_code||"").toUpperCase();
+  $("code").className="code c-"+c; $("codeTxt").textContent="CODICE "+(c||"—");
+  $("trend").textContent=s.trend||"—";
+  $("etna").textContent=s.etna_summary||"—"; $("etnaMeta").textContent=[s.tremor&&("Tremore: "+s.tremor),s.last_vona&&("Ultimo VONA: "+s.last_vona)].filter(Boolean).join(" · ");
+  $("ash").textContent=s.ash_summary||"—"; $("ashMeta").textContent=s.vaac_last?("Ultimo advisory VAAC: "+s.vaac_last):"";
+  $("apt").textContent=s.airport_summary||"—"; $("aptMeta").textContent=s.airport_source||"";
+  $("flt").textContent=s.flight_summary||"Nessun volo seguito."; $("fltMeta").textContent=s.flight_checked?("Verificato: "+fmt(s.flight_checked)):"";
+}
+function renderEvents(list){
+  const box=$("events"); box.textContent="";
+  if(!list.length){const d=document.createElement("div");d.className="empty";d.textContent="Nessun cambiamento significativo finora. I controlli orari aggiungono qui solo le novità rilevanti.";box.append(d);return}
+  for(const e of list){
+    const el=document.createElement("article");el.className="ev";
+    const t=document.createElement("div");t.className="t";t.textContent=e.title||"Cambiamento";
+    const b=document.createElement("div");b.textContent=[e.what_changed,e.meaning,e.impact&&("Impatto voli: "+e.impact)].filter(Boolean).join(" ");
+    const d=document.createElement("div");d.className="d";d.textContent=[fmt(e.ts),e.trend,e.source&&("Fonte: "+e.source)].filter(Boolean).join(" · ");
+    el.append(t,b,d);box.append(el);
+  }
+}
+async function load(){
+  try{
+    const [st,ev]=await Promise.all([fetch("state.json?t="+Date.now()).then(r=>r.json()),fetch("events.json?t="+Date.now()).then(r=>r.json())]);
+    renderState(st); renderEvents((ev||[]).sort((a,b)=>(b.ts||"").localeCompare(a.ts||"")).slice(0,30));
+  }catch(err){$("lastCheck").textContent="dati non disponibili, riprovo tra poco"}
+}
+load(); setInterval(load,5*60*1000);
+</script>
+
+</body>
+</html>

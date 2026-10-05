@@ -1,0 +1,14 @@
+{
+  "airport_source": "La Sicilia, 29/9; SAC",
+  "airport_summary": "Nessuna restrizione nota in corso. Ultima chiusura nota: 29/9, settore B3 chiuso e voli sospesi fino alle 15:00.",
+  "ash_summary": "Nessuna cenere osservata: l'ultimo advisory Toulouse VAAC dice cenere non identificabile da satellite e webcam, NO VA EXP a +6/+12/+18 h, nessun ulteriore advisory.",
+  "aviation_code": "ORANGE",
+  "etna_summary": "Dopo la fase con emissioni di cenere dal Cratere di Nord-Est (fine settembre, nube fino a ~5,5 km il 26–27/9, codice RED il 29/9), l'ultimo bollettino INGV descrive tremore tra basso e medio e infrasuoni in calo. Nessun nuovo comunicato INGV trovato dal 30/9.",
+  "flight_summary": "Nessun volo seguito.",
+  "last_check": "2026-10-05T00:40:00Z",
+  "last_vona": "29/9: passaggio ORANGE→RED alle 07:25 locali; ultimo stato noto ORANGE (VAAC 30/9)",
+  "tremor": "basso–medio (bollettino 21–27/9)",
+  "trend": "In miglioramento / stabile",
+  "vaac_last": "ETNA n.201, 30/09/2026 16:00Z — NO VA EXP, NO FURTHER ADVISORIES",
+  "vaac_last_id": "ETNA.201"
+}
