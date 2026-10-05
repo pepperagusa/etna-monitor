@@ -25,9 +25,13 @@ h1{font:700 1.9rem/1.1 var(--display);letter-spacing:.01em;margin:0;text-wrap:ba
 .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
 .label{font:600 .72rem var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.right{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .code{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);font:700 .95rem var(--display);letter-spacing:.06em;background:var(--panel)}
 .dot{width:10px;height:10px;border-radius:50%;background:var(--muted)}
 .c-GREEN .dot{background:var(--green)} .c-YELLOW .dot{background:var(--yellow)} .c-ORANGE .dot{background:var(--orange)} .c-RED .dot{background:var(--red)}
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;background:var(--panel);padding:2px}
+.lang button{font:700 .8rem var(--display);letter-spacing:.08em;padding:5px 11px;border-radius:999px;border:0;background:transparent;color:var(--muted);cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
 .trend{font-weight:600}
 .layers{display:grid;gap:0;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden}
 .layer{display:grid;grid-template-columns:2.2rem 1fr;gap:12px;padding:14px 16px;border-top:1px solid var(--line)}
@@ -45,8 +49,8 @@ section>h3{font:700 1.2rem var(--display);margin:0 0 8px;letter-spacing:.02em}
 form{display:flex;flex-wrap:wrap;gap:8px;align-items:end}
 form label{display:grid;gap:4px;font-size:.85rem;color:var(--muted)}
 input{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);min-width:0;width:11rem}
-button{font:600 .9rem var(--body);padding:9px 14px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
-button.ghost{background:transparent;color:var(--accent)}
+.btn{font:600 .9rem var(--body);padding:9px 14px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent)}
 button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 #msg{font-size:.85rem;color:var(--muted)}
 </style>
@@ -58,56 +62,101 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
 <div class="wrap">
   <header class="top">
     <div>
-      <h1>Etna e voli Catania</h1>
-      <div class="sub">Ultimo controllo: <span id="lastCheck" class="mono">in attesa del primo controllo</span></div>
+      <h1 data-i18n="title">Etna e voli Catania</h1>
+      <div class="sub"><span data-i18n="lastCheck">Ultimo controllo</span>: <span id="lastCheck" class="mono"></span></div>
     </div>
-    <div class="code" id="code"><span class="dot"></span><span id="codeTxt">CODICE —</span></div>
+    <div class="right">
+      <div class="lang" role="group" aria-label="Lingua / Language">
+        <button type="button" id="lang-it" aria-pressed="true">IT</button>
+        <button type="button" id="lang-en" aria-pressed="false">EN</button>
+      </div>
+      <div class="code" id="code"><span class="dot"></span><span id="codeTxt"></span></div>
+    </div>
   </header>
-  <div class="label">Tendenza: <span id="trend" class="trend">—</span></div>
+  <div class="label"><span data-i18n="trend">Tendenza</span>: <span id="trend" class="trend">—</span></div>
 
   <div class="layers">
-    <div class="layer"><div class="n">1</div><div><h2>Attività dell'Etna</h2><p id="etna">Lo stato comparirà dopo il primo controllo.</p><div class="meta" id="etnaMeta"></div></div></div>
-    <div class="layer"><div class="n">2</div><div><h2>Cenere nello spazio aereo</h2><p id="ash">—</p><div class="meta" id="ashMeta"></div></div></div>
-    <div class="layer"><div class="n">3</div><div><h2>Aeroporto di Catania</h2><p id="apt">—</p><div class="meta" id="aptMeta"></div></div></div>
-    <div class="layer"><div class="n">4</div><div><h2>Il tuo volo</h2><p id="flt">Nessun volo seguito.</p><div class="meta" id="fltMeta"></div></div></div>
+    <div class="layer"><div class="n">1</div><div><h2 data-i18n="l1">Attività dell'Etna</h2><p id="etna"></p><div class="meta" id="etnaMeta"></div></div></div>
+    <div class="layer"><div class="n">2</div><div><h2 data-i18n="l2">Cenere nello spazio aereo</h2><p id="ash">—</p><div class="meta" id="ashMeta"></div></div></div>
+    <div class="layer"><div class="n">3</div><div><h2 data-i18n="l3">Aeroporto di Catania</h2><p id="apt">—</p><div class="meta" id="aptMeta"></div></div></div>
+    <div class="layer"><div class="n">4</div><div><h2 data-i18n="l4">Il tuo volo</h2><p id="flt"></p><div class="meta" id="fltMeta"></div></div></div>
   </div>
 
   <section>
-    <h3>Cambiamenti segnalati</h3>
-    <div class="events" id="events"><div class="empty">Qui compariranno solo i cambiamenti significativi rilevati dai controlli orari.</div></div>
+    <h3 data-i18n="changes">Cambiamenti segnalati</h3>
+    <div class="events" id="events"></div>
   </section>
 </div>
 
 <script>
 const $=id=>document.getElementById(id);
-const fmt=s=>{if(!s)return"";try{return new Date(s).toLocaleString("it-IT",{timeZone:"Europe/Rome",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})+" (ora italiana)"}catch(e){return s}};
+const T={
+ it:{title:"Etna e voli Catania",lastCheck:"Ultimo controllo",waiting:"in attesa del primo controllo",trend:"Tendenza",code:"CODICE",
+  l1:"Attività dell'Etna",l2:"Cenere nello spazio aereo",l3:"Aeroporto di Catania",l4:"Il tuo volo",
+  etnaEmpty:"Lo stato comparirà dopo il primo controllo.",noFlight:"Nessun volo seguito.",tremor:"Tremore",vona:"Ultimo VONA",vaac:"Ultimo advisory VAAC",verified:"Verificato",
+  followH:"Volo da seguire",fnum:"Numero volo",fdate:"Data",follow:"Segui questo volo",unfollow:"Smetti di seguire",
+  changes:"Cambiamenti segnalati",noEvents:"Nessun cambiamento significativo finora. I controlli orari aggiungono qui solo le novità rilevanti.",
+  impact:"Impatto voli",source:"Fonte",change:"Cambiamento",tz:"ora italiana",locale:"it-IT",
+  noData:"Dati non disponibili in questa vista.",retry:"dati non disponibili, riprovo tra poco",
+  needNum:"Scrivi il numero del volo, per esempio FR1234.",saved:n=>"Volo "+n+" salvato: il prossimo controllo orario lo includerà.",saveErr:"Non sono riuscito a salvare il volo. Riprova.",
+  cleared:"Non segui più nessun volo.",clearErr:"Non sono riuscito ad aggiornare. Riprova.",
+  trends:{}},
+ en:{title:"Etna & Catania flights",lastCheck:"Last check",waiting:"waiting for the first check",trend:"Trend",code:"CODE",
+  l1:"Etna activity",l2:"Ash in the airspace",l3:"Catania airport",l4:"Your flight",
+  etnaEmpty:"Status will appear after the first check.",noFlight:"No flight being tracked.",tremor:"Tremor",vona:"Latest VONA",vaac:"Latest VAAC advisory",verified:"Checked",
+  followH:"Flight to track",fnum:"Flight number",fdate:"Date",follow:"Track this flight",unfollow:"Stop tracking",
+  changes:"Reported changes",noEvents:"No significant changes so far. Hourly checks add only relevant news here.",
+  impact:"Flight impact",source:"Source",change:"Change",tz:"Italian time",locale:"en-GB",
+  noData:"Data isn't available in this view.",retry:"data unavailable, retrying shortly",
+  needNum:"Enter the flight number, for example FR1234.",saved:n=>"Flight "+n+" saved: the next hourly check will include it.",saveErr:"Couldn't save the flight. Try again.",
+  cleared:"You're no longer tracking a flight.",clearErr:"Couldn't update. Try again.",
+  trends:{"in peggioramento":"worsening","in miglioramento":"improving","sostanzialmente stabile":"broadly stable","in miglioramento / stabile":"improving / stable"}}
+};
+let lang="it"; try{const s=localStorage.getItem("lang"); if(s==="en"||s==="it")lang=s}catch(e){}
+let lastState=null,lastEvents=null;
+const t=k=>T[lang][k];
+const pick=(o,k)=>o?((lang==="en"&&o[k+"_en"])||o[k]||""):"";
+const fmt=s=>{if(!s)return"";try{return new Date(s).toLocaleString(t("locale"),{timeZone:"Europe/Rome",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})+" ("+t("tz")+")"}catch(e){return s}};
+function applyLang(){
+  document.documentElement.lang=lang;
+  document.querySelectorAll("[data-i18n]").forEach(el=>{el.textContent=t(el.dataset.i18n)});
+  const fh=document.querySelector("#fform")?.closest("section")?.querySelector("h3"); if(fh)fh.textContent=t("followH");
+  $("lang-it").setAttribute("aria-pressed",lang==="it"); $("lang-en").setAttribute("aria-pressed",lang==="en");
+  renderState(lastState); renderEvents(lastEvents||[]);
+}
 function renderState(s){
-  if(!s)return;
-  $("lastCheck").textContent=fmt(s.last_check)||"—";
-  const c=(s.aviation_code||"").toUpperCase();
-  $("code").className="code c-"+c; $("codeTxt").textContent="CODICE "+(c||"—");
-  $("trend").textContent=s.trend||"—";
-  $("etna").textContent=s.etna_summary||"—"; $("etnaMeta").textContent=[s.tremor&&("Tremore: "+s.tremor),s.last_vona&&("Ultimo VONA: "+s.last_vona)].filter(Boolean).join(" · ");
-  $("ash").textContent=s.ash_summary||"—"; $("ashMeta").textContent=s.vaac_last?("Ultimo advisory VAAC: "+s.vaac_last):"";
-  $("apt").textContent=s.airport_summary||"—"; $("aptMeta").textContent=s.airport_source||"";
-  $("flt").textContent=s.flight_summary||"Nessun volo seguito."; $("fltMeta").textContent=s.flight_checked?("Verificato: "+fmt(s.flight_checked)):"";
+  $("lastCheck").textContent=(s&&fmt(s.last_check))||t("waiting");
+  const c=((s&&s.aviation_code)||"").toUpperCase();
+  $("code").className="code c-"+c; $("codeTxt").textContent=t("code")+" "+(c||"—");
+  const tr=pick(s,"trend"); $("trend").textContent=(lang==="en"&&!(s&&s.trend_en)&&T.en.trends[(tr||"").toLowerCase()])||tr||"—";
+  $("etna").textContent=pick(s,"etna_summary")||t("etnaEmpty");
+  $("etnaMeta").textContent=[pick(s,"tremor")&&(t("tremor")+": "+pick(s,"tremor")),pick(s,"last_vona")&&(t("vona")+": "+pick(s,"last_vona"))].filter(Boolean).join(" · ");
+  $("ash").textContent=pick(s,"ash_summary")||"—"; $("ashMeta").textContent=s&&s.vaac_last?(t("vaac")+": "+s.vaac_last):"";
+  $("apt").textContent=pick(s,"airport_summary")||"—"; $("aptMeta").textContent=(s&&s.airport_source)||"";
+  const f=pick(s,"flight_summary"); $("flt").textContent=(f&&!/^Nessun volo/i.test(f)?f:"")||t("noFlight");
+  $("fltMeta").textContent=s&&s.flight_checked?(t("verified")+": "+fmt(s.flight_checked)):"";
 }
 function renderEvents(list){
   const box=$("events"); box.textContent="";
-  if(!list.length){const d=document.createElement("div");d.className="empty";d.textContent="Nessun cambiamento significativo finora. I controlli orari aggiungono qui solo le novità rilevanti.";box.append(d);return}
+  if(!list.length){const d=document.createElement("div");d.className="empty";d.textContent=t("noEvents");box.append(d);return}
   for(const e of list){
     const el=document.createElement("article");el.className="ev";
-    const t=document.createElement("div");t.className="t";t.textContent=e.title||"Cambiamento";
-    const b=document.createElement("div");b.textContent=[e.what_changed,e.meaning,e.impact&&("Impatto voli: "+e.impact)].filter(Boolean).join(" ");
-    const d=document.createElement("div");d.className="d";d.textContent=[fmt(e.ts),e.trend,e.source&&("Fonte: "+e.source)].filter(Boolean).join(" · ");
-    el.append(t,b,d);box.append(el);
+    const h=document.createElement("div");h.className="t";h.textContent=pick(e,"title")||t("change");
+    const b=document.createElement("div");b.textContent=[pick(e,"what_changed"),pick(e,"meaning"),pick(e,"impact")&&(t("impact")+": "+pick(e,"impact"))].filter(Boolean).join(" ");
+    const d=document.createElement("div");d.className="d";d.textContent=[fmt(e.ts),pick(e,"trend"),e.source&&(t("source")+": "+e.source)].filter(Boolean).join(" · ");
+    el.append(h,b,d);box.append(el);
   }
 }
+function setLang(l){lang=l;try{localStorage.setItem("lang",l)}catch(e){}applyLang()}
+$("lang-it").addEventListener("click",()=>setLang("it"));
+$("lang-en").addEventListener("click",()=>setLang("en"));
+applyLang();
 async function load(){
   try{
     const [st,ev]=await Promise.all([fetch("state.json?t="+Date.now()).then(r=>r.json()),fetch("events.json?t="+Date.now()).then(r=>r.json())]);
-    renderState(st); renderEvents((ev||[]).sort((a,b)=>(b.ts||"").localeCompare(a.ts||"")).slice(0,30));
-  }catch(err){$("lastCheck").textContent="dati non disponibili, riprovo tra poco"}
+    lastState=st; lastEvents=(ev||[]).sort((a,b)=>(b.ts||"").localeCompare(a.ts||"")).slice(0,30);
+    renderState(lastState); renderEvents(lastEvents);
+  }catch(err){$("lastCheck").textContent=t("retry")}
 }
 load(); setInterval(load,5*60*1000);
 </script>
