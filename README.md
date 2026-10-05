@@ -1,9 +1,5 @@
 # Etna e voli Catania
 
-Monitoraggio orario dell'attività dell'Etna e del suo impatto sui voli da/per Catania (INGV-OE, Toulouse VAAC, SAC).
+Questa pagina si è spostata su Claude: https://claude.ai/artifact/NYTzrY6eKwUCU7EBvitCZQ
 
-- `index.html`: la pagina
-- `state.json`: stato dell'ultimo controllo
-- `events.json`: storico dei cambiamenti significativi
-
-I file JSON sono aggiornati ogni ora da un'attività programmata di Claude.
+`index.html` reindirizza lì.
